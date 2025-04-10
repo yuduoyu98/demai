@@ -1,8 +1,14 @@
-import { keepTheme } from "keep-react/keepTheme";
-
 const config = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: {},
+  theme: {
+    extend: {
+      colors: {
+        metal: {
+          200: "#C0C0C0",
+        },
+      },
+    },
+  },
 }
 
-export default keepTheme(config);
+export default config;

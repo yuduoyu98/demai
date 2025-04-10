@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from "keep-react";
 import MetaMaskIcon from '../assets/MetaMask_Fox.svg';
 import '../styles/Login.css';
 import * as React from "react";
@@ -71,16 +70,15 @@ const Login: React.FC = () => {
         <p className="login-subtitle">
           Connect your wallet to explore a new NFT ticketing experience. Secure, transparent, and convenient.
         </p>
-        <Button
-          size="md"
+        <button
           type="button"
           onClick={handleConnectWallet}
           disabled={isConnecting}
           className="connect-wallet-button"
         >
           <img src={MetaMaskIcon} alt="MetaMask" className="metamask-icon" />
-          {isConnecting ? 'Connecting...' : 'Connect Wallet'}
-        </Button>
+          <span>{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
+        </button>
         
         {error && (
           <div className="error-message">

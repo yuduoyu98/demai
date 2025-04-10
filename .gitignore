@@ -1,4 +1,7 @@
-node_modules
+# Dependencies
+/node_modules
+
+# Environment variables
 .env
 
 # Hardhat files
@@ -14,11 +17,15 @@ node_modules
 /coverage.json
 
 # Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337
+/ignition/deployments/chain-31337
+
+# Editor directories and files
+.cursor/
+
+# System Files
+.DS_Store
+Thumbs.db
 
 # design
 design/
 assets/
-
-# cursor
-.cursor/
