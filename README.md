@@ -1,13 +1,20 @@
 # DeMai 
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+DeMai is an NFT ticketing system that leverages blockchain technology to provide secure, transparent, and tamper-proof digital tickets as NFTs.
 
-Try running some of the following tasks:
+## Overview
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
+
+## Tech Stack
+
+### Smart Contracts
+- **Framework**: Hardhat
+- **Language**: Solidity
+- **Testing/Scripting**: JavaScript
+
+### Frontend
+- **Framework**: React
+- **UI Library**: KeepReact
+- **State Management**: Context API / Redux
+
+
