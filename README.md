@@ -14,7 +14,6 @@ DeMai is an NFT ticketing system that leverages blockchain technology to provide
 
 ### Frontend
 - **Framework**: React
-- **UI Library**: KeepReact
 - **State Management**: Context API / Redux
 
 
