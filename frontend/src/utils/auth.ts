@@ -1,4 +1,36 @@
 // Authentication utility functions
+import { web3modal } from './web3modal';
+import { useDisconnect, useAccount } from 'wagmi';
+
+/**
+ * Wagmi钩子: 处理钱包连接和断开
+ * 返回账户状态和相关函数
+ */
+export const useWalletAuth = () => {
+  const { address, isConnected, status, chain, chainId } = useAccount();
+  const { disconnectAsync } = useDisconnect();
+  
+  // 连接钱包 - 打开Web3Modal
+  const connectWallet = () => {
+    web3modal.open();
+  };
+  
+  // 断开钱包连接
+  const disconnectWallet = async () => {
+    await disconnectAsync();
+    clearWalletAddress();
+  };
+  
+  return {
+    address, 
+    isConnected,
+    status,
+    chain,
+    chainId,
+    connectWallet,
+    disconnectWallet
+  };
+};
 
 /**
  * Save the wallet address to localStorage
@@ -32,85 +64,12 @@ export const isAuthenticated = (): boolean => {
 };
 
 /**
- * Revoke wallet permissions
- */
-export const revokeWalletPermissions = async (): Promise<void> => {
-  if (window.ethereum) {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_revokePermissions',
-        params: [{ eth_accounts: {} }]
-      });
-      console.log('Wallet permissions revoked');
-    } catch (error) {
-      console.error('Error revoking wallet permissions:', error);
-    }
-  }
-};
-
-/**
- * Setup listeners for wallet connection events
- * @param onDisconnect Callback to run when wallet is disconnected
- */
-export const setupWalletListeners = (onDisconnect: () => void): void => {
-  if (window.ethereum) {
-    // Listen for account changes
-    window.ethereum.on('accountsChanged', (accounts: string[]) => {
-      console.log('Accounts changed:', accounts);
-      if (!accounts.length) {
-        // No accounts - user disconnected
-        onDisconnect();
-      } else {
-        // Update the stored wallet address
-        setWalletAddress(accounts[0]);
-      }
-    });
-
-    // Listen for chain changes
-    window.ethereum.on('chainChanged', () => {
-      console.log('Chain changed, refreshing...');
-      window.location.reload();
-    });
-
-    // Listen for disconnect events
-    window.ethereum.on('disconnect', () => {
-      console.log('Wallet disconnected');
-      onDisconnect();
-    });
-  }
-};
-
-/**
- * Remove wallet event listeners
- */
-export const removeWalletListeners = (): void => {
-  if (window.ethereum) {
-    window.ethereum.removeListener('accountsChanged', () => {});
-    window.ethereum.removeListener('chainChanged', () => {});
-    window.ethereum.removeListener('disconnect', () => {});
-  }
-};
-
-/**
  * Complete logout process:
- * 1. Revoke wallet permissions
- * 2. Clear local storage
- * 3. Redirect to login page
+ * Clear local storage only
+ * 
+ * Note: For disconnecting the wallet, use the disconnectWallet method 
+ * from useWalletAuth hook inside components.
  */
-export const logout = async (): Promise<void> => {
-  try {
-    // Revoke wallet permissions
-    await revokeWalletPermissions();
-    // Clear local storage
-    clearWalletAddress();
-    // Remove event listeners
-    removeWalletListeners();
-    // Redirect to login page
-    window.location.href = '/login';
-  } catch (error) {
-    console.error('Error during logout:', error);
-    // Ensure redirect happens even if revoke fails
-    clearWalletAddress();
-    window.location.href = '/login';
-  }
+export const logout = (): void => {
+  clearWalletAddress();
 }; 

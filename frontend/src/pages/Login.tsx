@@ -1,63 +1,24 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import MetaMaskIcon from '../assets/MetaMask_Fox.svg';
 import '../styles/Login.css';
-import * as React from "react";
-import { setWalletAddress } from '../utils/auth';
+import { useAccount } from 'wagmi';
+import { web3modal } from '../utils/web3modal';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { isConnected, isConnecting } = useAccount();
+  const navigate = useNavigate();
 
-  const handleConnectWallet = async () => {
-    setIsConnecting(true);
-    setError(null);
-    
-    try {
-      // Check if MetaMask is installed
-      if (window.ethereum) {
-        try {
-          // First request account access - this will prompt the user to connect
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_requestAccounts' 
-          });
-          
-          if (accounts && accounts.length > 0) {
-            const walletAddress = accounts[0];
-            
-            // Request explicit permissions for a temporary session
-            await window.ethereum.request({
-              method: 'wallet_requestPermissions',
-              params: [{ eth_accounts: {} }]
-            });
-            
-            console.log('Connected to MetaMask with account:', walletAddress);
-            
-            // Save wallet address
-            setWalletAddress(walletAddress);
-            
-            // Redirect to dashboard after successful connection
-            window.location.href = '/dashboard';
-          } else {
-            setError('No accounts found. Please connect to MetaMask.');
-          }
-        } catch (connectionError: any) {
-          // User rejected the connection request
-          if (connectionError.code === 4001) {
-            setError('Connection request rejected. Please approve MetaMask connection to proceed.');
-          } else {
-            setError(connectionError.message || 'Failed to connect to wallet');
-          }
-          console.error('Error connecting to MetaMask:', connectionError);
-        }
-      } else {
-        setError('MetaMask is not installed. Please install the MetaMask extension and try again.');
-      }
-    } catch (error: any) {
-      console.error('Error connecting to wallet:', error);
-      setError(error.message || 'Failed to connect to wallet');
-    } finally {
-      setIsConnecting(false);
+  // 如果已连接，重定向到仪表板
+  useEffect(() => {
+    if (isConnected) {
+      navigate('/dashboard');
     }
+  }, [isConnected, navigate]);
+
+  // 使用Web3Modal连接钱包
+  const handleConnectWallet = () => {
+    web3modal.open();
   };
 
   return (
@@ -79,12 +40,6 @@ const Login: React.FC = () => {
           <img src={MetaMaskIcon} alt="MetaMask" className="metamask-icon" />
           <span>{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
         </button>
-        
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );
