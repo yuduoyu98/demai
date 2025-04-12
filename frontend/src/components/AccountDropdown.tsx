@@ -3,7 +3,6 @@ import { useAccount, useDisconnect, useChainId } from 'wagmi';
 import { getNetworkInfo } from '../utils/network';
 import { web3modal, getNetworkTypeLabel } from '../utils/web3modal';
 import { formatAddress } from '../utils/web3modal';
-import CustomNetworkModal from './CustomNetworkModal';
 
 const AccountDropdown: React.FC = () => {
   const { address, isConnected } = useAccount();
@@ -12,7 +11,6 @@ const AccountDropdown: React.FC = () => {
   
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAssetsMenu, setShowAssetsMenu] = useState(false);
-  const [showCustomNetworkModal, setShowCustomNetworkModal] = useState(false);
   const [currentNetwork, setCurrentNetwork] = useState<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const assetsMenuRef = useRef<HTMLDivElement>(null);
@@ -67,11 +65,6 @@ const AccountDropdown: React.FC = () => {
     setShowAssetsMenu(true);
     setShowDropdown(false);
     document.body.style.overflow = 'hidden'; // 防止背景滚动
-  };
-
-  const openCustomNetworkModal = () => {
-    setShowCustomNetworkModal(true);
-    setShowDropdown(false);
   };
 
   const closeAllSideMenus = () => {
@@ -190,27 +183,7 @@ const AccountDropdown: React.FC = () => {
               </button>
             </div>
             
-            {/* 自定义网络按钮 */}
-            <div className="p-2">
-              <button 
-                className="w-full flex items-center justify-between p-2 rounded-md hover:bg-gray-100 transition-colors"
-                onClick={openCustomNetworkModal}
-              >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">Add Custom Network</p>
-                    <p className="text-sm text-gray-500">Configure your own network</p>
-                  </div>
-                </div>
-              </button>
-            </div>
-            
-            {/* 资产部分 */}
+            {/* 资产按钮 */}
             <div className="p-2">
               <button 
                 className="w-full flex items-center justify-between p-2 rounded-md hover:bg-gray-100 transition-colors"
@@ -224,7 +197,7 @@ const AccountDropdown: React.FC = () => {
                   </div>
                   <div className="text-left">
                     <p className="font-medium text-gray-900">Assets</p>
-                    <p className="text-sm text-gray-500">HKDT & Tickets</p>
+                    <p className="text-sm text-gray-500">HKDT & NFT tickets</p>
                   </div>
                 </div>
                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,132 +209,94 @@ const AccountDropdown: React.FC = () => {
             {/* 登出按钮 */}
             <div className="p-2">
               <button 
-                className="w-full flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center justify-between p-2 rounded-md hover:bg-gray-100 transition-colors text-red-600"
                 onClick={handleLogout}
               >
-                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-3">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-3">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </div>
+                  <p className="font-medium">Log Out</p>
                 </div>
-                <span className="font-medium text-gray-900">Logout</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 侧边菜单遮罩层 */}
+      {/* 资产侧边栏 */}
       {showAssetsMenu && (
-        <div 
-          ref={overlayRef}
-          className="fixed top-0 left-0 right-0 bottom-0 bg-transparent z-50"
-          onClick={closeAllSideMenus}
-        ></div>
-      )}
-      
-      {/* 资产侧边菜单 */}
-      {showAssetsMenu && (
-        <div 
-          ref={assetsMenuRef}
-          className="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-lg z-60 overflow-y-auto transform transition-transform duration-300"
-          style={{ transform: showAssetsMenu ? 'translateX(0)' : 'translateX(100%)' }}
-        >
-          <div className="h-full flex flex-col">
-            {/* 侧边菜单头部 */}
-            <div className="p-4 border-b border-gray-200">
+        <>
+          {/* 遮罩层 */}
+          <div
+            ref={overlayRef}
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={closeAllSideMenus}
+          ></div>
+          
+          {/* 侧边栏 */}
+          <div
+            ref={assetsMenuRef}
+            className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out"
+          >
+            {/* 侧边栏头部 */}
+            <div className="bg-white p-4 border-b">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h2 className="font-medium text-lg text-gray-900">My Assets</h2>
-                </div>
-                <button onClick={closeAllSideMenus} className="text-gray-400 hover:text-gray-500">
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h2 className="text-lg font-medium text-gray-900">Your Assets</h2>
+                <button
+                  onClick={closeAllSideMenus}
+                  className="rounded-md hover:bg-gray-100 p-1"
+                >
+                  <svg className="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
             
-            {/* 资产余额 */}
-            <div className="p-4 flex-1 overflow-y-auto">
+            {/* 资产内容 */}
+            <div className="p-4">
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-3">TOKENS</h3>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">TOKENS</h3>
+                <div className="bg-white rounded-lg border border-gray-200 p-3 flex items-center justify-between mb-2">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
-                      <span className="font-bold">$</span>
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                      <span className="font-bold">HK</span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <p className="font-medium text-gray-900">HKDT</p>
-                        <p className="font-medium text-gray-900">1,500.00</p>
-                      </div>
-                      <div className="flex justify-between mt-1">
-                        <p className="text-xs text-gray-500">Hong Kong Dollar Token</p>
-                        <p className="text-xs text-gray-500">≈ $1,500.00</p>
-                      </div>
+                    <div>
+                      <p className="font-medium">HKDT</p>
+                      <p className="text-sm text-gray-500">Hong Kong Dollar Token</p>
                     </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">1,000.00</p>
+                    <p className="text-sm text-gray-500">$1,000.00</p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-3">MY TICKETS</h3>
-                <div className="space-y-3">
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
-                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <p className="font-medium text-gray-900">Hong Kong Tech Conference 2023</p>
-                        </div>
-                        <div className="flex justify-between mt-1">
-                          <p className="text-xs text-gray-500">General Admission</p>
-                          <p className="text-xs text-gray-700 font-medium">Seat A-12</p>
-                        </div>
-                      </div>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">NFT TICKETS</h3>
+                <div className="space-y-2">
+                  <div className="bg-white rounded-lg border border-gray-200 p-3">
+                    <div className="flex justify-between mb-2">
+                      <p className="font-medium">Event Name</p>
+                      <span className="px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full">Active</span>
                     </div>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
-                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <p className="font-medium text-gray-900">Blockchain Summit 2023</p>
-                        </div>
-                        <div className="flex justify-between mt-1">
-                          <p className="text-xs text-gray-500">VIP Access</p>
-                          <p className="text-xs text-gray-700 font-medium">Seat VIP-04</p>
-                        </div>
-                      </div>
+                    <p className="text-sm text-gray-500 mb-2">VIP Ticket • Seat: A12</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <p>Oct 15, 2023 • 20:00</p>
+                      <p>ID: #101</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
-
-      {/* 自定义网络弹窗 */}
-      <CustomNetworkModal 
-        isOpen={showCustomNetworkModal} 
-        onClose={() => setShowCustomNetworkModal(false)} 
-      />
     </div>
   );
 };
